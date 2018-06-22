@@ -68,6 +68,7 @@ function password_verif($Logpassword, $dataPass){
 <script>
 	$("#Login").click(function(){
 		$.post("functions.php", {
+            thing: "login",
 			username: document.getElementById("username").value,
 			password: document.getElementById("password").value
 		},

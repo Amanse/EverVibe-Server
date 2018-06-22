@@ -1,49 +1,15 @@
 <?php
 include('classes/db.php');
-$messages = "";
-if(isset($_POST['create-account'])){
-	$username = $_POST['username'];
-	$password = $_POST['password'];
-	$email = $_POST['email'];
 
-	if(!DB::query('SELECT username FROM users WHERE username=:username', array(':username'=>$username))){
 
-		if(strlen($username) >= 3 && strlen($username) <= 32) {
-
-			if(strlen($password) >= 6 && strlen($password) <= 60){
-
-			if(preg_match('/[a-zA-Z0-9_]/', $username)){
-
-			if(!DB::query('SELECT email FROM users WHERE email=:email', array(":email"=>$email))){
-
-				DB::query('INSERT INTO `users` VALUES (\'\' ,:username, :password, :email)', array(':username'=>$username, ':password'=>sha1($password), ':email'=>$email));
-				echo "Success";
-				header("LOCATION: login.php");
-			}else{
-				$messages =  "Email already exits";
-			}
-
-		}else{
-			$messages = "Invalid username";
-		}
-
-		}else{
-			$messages = "Invalid Password";
-		}
-
-	}else{
-		$messages = "Invalid Username";
-	}
-}else{
-	$messages = "User already exist";
-}
-}
 ?>
 <head>
 	<meta charset="utf-8">
  	 <meta name="viewport" content="width=device-width, initial-scale=1">
 	<title>Create-Account</title>
 	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.6.2/css/bulma.min.css">
+    <script src="http://code.jquery.com/jquery-3.3.1.js"></script>
+
 	<style type="text/css">
 		@import url('https://fonts.googleapis.com/css?family=ABeeZee|Questrial|Ropa+Sans');
 
@@ -59,8 +25,9 @@ if(isset($_POST['create-account'])){
 		.hero{
 
 		}
-	</style>
+</style>
 </head>
+<body>
 <section class="hero is-danger is-bold is-fullheight">
 	<div class="hero-body">
 		<div class="container is-one-third">
@@ -68,15 +35,39 @@ if(isset($_POST['create-account'])){
 			<h1 class="heading">Create-account</h1>
 				<form action="create-account.php" method="post">
 					<lable class="lable"><span style="font-family: 'Questrial', sans-serif;">Username</span></lable>
-					<input type="text" class="input is-rounded is-primary" name="username" ><br>
+					<input type="text" id="username" class="input is-rounded is-primary" name="username" ><br>
 					<lable class="lable"><span style="font-family: 'Questrial', sans-serif;">Password</span></lable>
-					<input type="password" class="input is-rounded is-primary" name="password" ><br>
+					<input type="password" id="password" class="input is-rounded is-primary" name="password" ><br>
 					<lable class="lable"><span style="font-family: 'Questrial', sans-serif;">E-mail</span></lable>
-					<input type="email" class="input is-rounded is-primary" name="email" ><br>	
+					<input type="email" id="email" class="input is-rounded is-primary" name="email" ><br>	
 					<br>
-					<input type="submit" class="button is-info" name="create-account" value="Create-Account">
+					<input type="button" id="MakeAccount" class="button is-info" name="create-account" value="Create-Account">
 				</form>
+				<div id="something"></div>
 				<a href="login.php">Already have an account?</a>
 		</div>
 	</div>
 </section>
+<script>
+    
+    $("#MakeAccount").click(function(){
+        $.post("functions.php", {
+            thing: "Register",
+            username: $("#username").val(),
+            password: $("#password").val(),
+            email: $("#email").val()
+        },
+        function(data, status) {
+            if (data == "Registered") {
+                location.replace("login.php");
+            } else {
+                $("#something").html(data);
+            }
+            $("#something").html(data);
+            console.log(status);
+        }    
+        )
+    })
+    
+</script>
+</body>

@@ -11,7 +11,7 @@ function password_verif($Logpassword, $dataPass){
 	}
 }
 
-if(isset($_POST['username'])){
+if($_POST['thing'] == "login"){
 	$username =$_POST['username'];
 	$password = $_POST['password'];
 
@@ -65,5 +65,45 @@ if (isset($_GET['query'])) {
 		echo "No users found";
 	}			
 }
+// End of user search script
 
+//Registeration script 
+
+if ($_POST['thing'] == "Register") {
+    $username = $_POST['username'];
+	$password = $_POST['password'];
+	$email = $_POST['email'];
+
+	if(!DB::query('SELECT username FROM users WHERE username=:username', array(':username'=>$username))){
+
+		if(strlen($username) >= 3 && strlen($username) <= 32) {
+
+			if(strlen($password) >= 6 && strlen($password) <= 60){
+
+			if(preg_match('/[a-zA-Z0-9_]/', $username)){
+
+			if(!DB::query('SELECT email FROM users WHERE email=:email', array(":email"=>$email))){
+
+				DB::query('INSERT INTO `users` VALUES (\'\' ,:username, :password, :email)', array(':username'=>$username, ':password'=>sha1($password), ':email'=>$email));
+				echo "Registered";
+				//header("LOCATION: login.php");
+			}else{
+				echo  "Email already exits";
+			}
+
+		}else{
+			echo "Invalid username";
+		}
+
+		}else{
+			echo "Invalid Password";
+		}
+
+	}else{
+		echo "Invalid Username";
+	}
+}else{
+	echo "User already exist";
+}
+}
 ?>
