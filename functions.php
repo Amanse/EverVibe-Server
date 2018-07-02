@@ -1,6 +1,8 @@
-<?php 
+<?php
 include('classes/db.php');
-
+include('classes/Post.php');
+include('classes/notify.php');
+include('classes/Comment.php');
 
 // Login script
 function password_verif($Logpassword, $dataPass){
@@ -63,11 +65,11 @@ if (isset($_GET['query'])) {
 		echo "</ul>";
 	} else {
 		echo "No users found";
-	}			
+	}
 }
 // End of user search script
 
-//Registeration script 
+//Registeration script
 
 if ($_POST['thing'] == "Register") {
     $username = $_POST['username'];
@@ -106,4 +108,66 @@ if ($_POST['thing'] == "Register") {
 	echo "User already exist";
 }
 }
+// Sign up script Ends
+
+//Follow script
+if($_POST['thing'] == "Following") {
+	$userid = $_POST['userId'];
+	$followerid = $_POST['followerId'];
+	$followCheck = DB::query('SELECT user_id FROM followers WHERE follower_id=:followerid AND user_id=:userid', array(':userid'=>$userid, ':followerid'=>$followerid));
+	 if(!$followCheck) {
+	 	DB::query('INSERT INTO followers VALUES (\'\', :userid, :followerid)', array(':userid'=>$userid, ':followerid'=>$followerid));
+					$isFollowing = True;
+		DB::query("INSERT INTO notification VALUES('', :type, :reciever, :sender, :extra)", array(":type"=>3, ":reciever"=>$userid, ":sender"=>$followerid,":extra"=>""));
+	 } else {
+	 	echo "already Following";
+	 }
+}
+//End of follow script
+
+//UnFollow Script
+if ($_POST['thing'] == "UnFollowing") {
+	$userid = $_POST['userId'];
+	$followerid = $_POST['followerId'];
+	$followCheck = DB::query('SELECT user_id FROM followers WHERE follower_id=:followerid AND user_id=:userid', array(':userid'=>$userid, ':followerid'=>$followerid));
+
+	if ($followCheck) {
+		DB::query('DELETE FROM followers WHERE user_id=:userid AND follower_id=:followerid', array(':userid'=>$userid, ':followerid'=>$followerid));
+	} else {
+		echo "Not following";
+	}
+}
+
+//make post script
+if($_POST['thing'] == "MakingPost") {
+	Post::MakePost($_POST['postbody'], $_POST['followerid'], $_POST['userid']);
+}
+//End of Making Post Script
+
+//Getting Post
+if ($_GET['thing'] == "Get Posts") {
+	$userid = $_GET['userid'];
+	$username = DB::query("SELECT username FROM users WHERE id=:id", array(":id"=>$userid))[0]['username'];
+	$followerid = $_GET['followerid'];
+
+	$post = Post::displayPosts($userid, $username, $followerid);
+	echo $post;
+}
+//End of getting post
+
+//Making Comment
+if ($_POST['thing'] == "Make Comment") {
+	$Poster_id = $_POST['posterId'];
+	$Post_id = $_POST['postId'];
+	$commentBody = $_POST['commentBody'];
+
+	Comment::MakeComment($commentBody, $Post_id, $Poster_id);
+}
+//End making comment
+
+//Getting Comments
+if ($_POST['thing'] == "Get comments") {
+	Comment::displayComments($_POST['PostId']);
+}
+//Got Comments
 ?>

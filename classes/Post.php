@@ -77,14 +77,16 @@ class Post{
 
 			//post and like button
 			$posts .= "<div class='hero-body'><div class='container '><h1 class='title'>".self::link_add($p['body'])."</h1><form action='profile.php?username=$username&postid=".$p['id']."' method='post'>
-			<input type='submit' name='like' class='button is-info' value='Like'>";
+			<input type='submit' name='like' id='like' class='button is-info' value='Like'>
+			<input type='hidden' id='postId' value='".$p['id']."'>
+			";
 			if($userid == $loggedinuserid){
-			$posts .= "<span><a href='likes.php?id=".$p['id']."'>".$p['likes']." Likes</a></span>";
+			$posts .= "<span id='LikesNumber'>".$p['likes']." Likes</span>";
 			}else{
-				$posts .= "<span>".$p['likes']." Likes</span>";
+				$posts .= "<span id='LikesNumber'>".$p['likes']." Likes</span>";
 			}
 			if($userid == $loggedinuserid){
-				$posts .= " <input type='submit' class='button is-light' name='deletepost' value='x'>";
+				$posts .= " <input type='submit' class='button is-light' id='deletePost' name='deletepost' value='x'>";
 			}
 			$posts .= "</form>";
 			$posts .= "<a href='posts.php?id=".$p['id']."'>Comments</a>";
@@ -92,8 +94,8 @@ class Post{
 
 			}else{
 				$posts .= "<div class='hero-body'><div class='container '><h1 class='title'>".self::link_add($p['body'])."</h1><form action='profile.php?username=$username&postid=".$p['id']."' method='post'>
-			<input type='submit' name='like' class='button is-primary' value='Unlike'>
-			<span> ".$p['likes']." Likes</span>";
+			<input type='submit' id='like' name='like' class='button is-primary' value='Unlike'>
+			<span id='LikesNumber'> ".$p['likes']." Likes</span>";
 			if($userid == $loggedinuserid){
 				$posts .= " <input type='submit' class='button is-light' name='deletepost' value='X'>";
 			}

@@ -7,6 +7,7 @@ include('classes/notify.php');
 $showTimeline = False;
 $searchResults = "";
 $users= "";
+$userid = "";
 $con = mysqli_connect("sql108.epizy.com", "epiz_22081076", "THEHERO", "epiz_22081076_finale");
 if(Login::isLoggedIn()){
 	$userid = Login::isLoggedIn();
@@ -50,10 +51,8 @@ if(isset($_POST['comment'])){
 	}
 
 	.comments {
-		margin-bottom: 0;
-		padding: 0;
-		padding-left: 15px;
-		font-size: 20px;
+			margin: 2px;
+			padding: 5px;
 	}
 
 	.username{
@@ -69,10 +68,7 @@ if(isset($_POST['comment'])){
 
 </style>
 <title>EverVibe - Homepage</title>
-<script
-  src="https://code.jquery.com/jquery-3.3.1.js"
-  integrity="sha256-2Kok7MbOyxpgUVvAk/HJ2jigOSYS2auK4Pfzbm7uH60="
-  crossorigin="anonymous"></script>
+	<script src='https://code.jquery.com/jquery-3.3.1.js'></script>
 <script type="text/javascript">
 	$(document).ready(function(){
 		$("#searchButton").click(function(){
@@ -126,6 +122,7 @@ ORDER BY posts.posted_at DESC
  ");
 
 //$followingposts .= "SELECT posts.id, posts.body, posts.likes, users.username, posts.posted_at FROM posts, users WHERE users.id='$userid' ORDER BY posts.posted_at DESC";
+
 foreach ($followingposts as $posts) {
 	//echo "<div style='background-color: #334'>";
 	echo "<div class='container'><b><a href='profile.php?username=". $posts['username'] ."'>". htmlspecialchars($posts['username']) . "</a></b><div class='hero-body post'><h3 class='Title'>".Post::link_add($posts['body']) ."</div></h3>";
@@ -138,14 +135,17 @@ if(!DB::query('SELECT user_id FROM post_likes WHERE user_id=:userid AND post_id=
 			echo "<span>".$posts['likes']." Likes</span>
 			</form>
 
-			<form action='index.php?postsid=".$posts['id']."' method='post'>
+			<form method='post' action='index.php?postsid=".$posts['id']."'>
 			<label for='commentbody' class='label'>Comments</label>
-			<textarea name='commentbody' class='input is-small is-rounded is-danger' rows='1' cols='20'></textarea><br>
-			<input type='submit' name='comment' class='button is-warning' Value='Comment'>
+			<textarea name='commentbody' id='commentBody' class='input is-small is-rounded is-danger' rows='1' cols='20'></textarea><br>
+			<input type='SUBMIT' id='makeComment' name='comment' class='button is-warning' Value='Comment'>
+			<input type='hidden' value='".$posts['id']."' id='inputPostId'>
 			</form>";
 			//echo "<button type='button' class='btn btn-link' style='color:white' data-toggle='modal' data-target='#myModal'>View all</button>";
 		//	echo "<div id='commentsAllShown'></div>";
+			echo "<div id='commentsAll'>";
 			Comment::displayComments($posts['id']);
+			echo "</div>";
 			
 			echo "</div>";
 			echo "<hr >";

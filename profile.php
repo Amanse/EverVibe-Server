@@ -25,33 +25,9 @@ if(isset($_GET['username'])){
 			$isFollowing = True;
 		}
 
-		if(DB::query('SELECT * FROM followers WHERE user_id=:userid AND follower_id=:followerid', array(':userid'=>$userid, ':followerid'=>'10'))){
+		if(DB::query('SELECT * FROM followers WHERE user_id=:userid AND follower_id=:followerid', array(':userid'=>$userid, ':followerid'=>'52'))){
 			$isVerified = True;
 		}
-
-		if(isset($_POST['follow'])){
-				//$followCheck = DB::query('SELECT user_id FROM followers WHERE follower_id=:userid', array(':userid'=>$followerid));
-				if(!$followCheck){
-					DB::query('INSERT INTO followers VALUES (\'\', :userid, :followerid)', array(':userid'=>$userid, ':followerid'=>$followerid));
-					$isFollowing = True;
-					DB::query("INSERT INTO notification VALUES('', :type, :reciever, :sender, :extra)", array(":type"=>3, ":reciever"=>$userid, ":sender"=>$followerid,":extra"=>""));
-				}else{
-					DB::query('DELETE FROM followers WHERE user_id=:userid AND follower_id=:followerid', array(':userid'=>$userid, ':followerid'=>$followerid));
-					$isFollowing = False;
-				}
-		}
-
-		if(isset($_POST['unfollow'])){
-			if($followerid != $userid){
-				//$followCheck = DB::query('SELECT user_id FROM followers WHERE follower_id=:userid', array(':userid'=>$followerid));
-					if($followCheck){
-						DB::query('DELETE FROM followers WHERE user_id=:userid AND follower_id=:followerid', array(':userid'=>$userid, ':followerid'=>$followerid));
-						$isFollowing = False;
-					}else{
-						echo "Not Following";
-					}
-				}
-			}
 
 		if(isset($_POST['post'])){
 			Post::MakePost($_POST['postbody'], Login::isLoggedIn(), $userid);
@@ -66,7 +42,7 @@ if(isset($_GET['username'])){
 				}
 			}else{
 			Post::LikePost($_GET['postid'], Login::isLoggedIn(), $userid);
-			}		
+			}
 		}
 
 		$posts = Post::displayPosts($userid, $username, Login::isLoggedIn());
@@ -88,7 +64,7 @@ if(isset($_GET['username'])){
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.6.2/css/bulma.min.css">
   <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
-	<script src='https://code.jquery.com/jquery-3.3.1.js'></script>	
+	<script src='https://code.jquery.com/jquery-3.3.1.js'></script>
   <style type="text/css">
   	@import url('https://fonts.googleapis.com/css?family=ABeeZee|Questrial|Ropa+Sans');
   	.title-1{
@@ -128,7 +104,7 @@ if(isset($_GET['username'])){
               Change-Password
             </a>
             <a href="notify.php" class="navbar-item">
-              Notification
+              Notifications
             </a>
             <span class="navbar-item">
               <a href='logout.php' class="button is-primary is-inverted">
@@ -139,8 +115,8 @@ if(isset($_GET['username'])){
 			<a class="navbar-item" href="talk.php?username=<?php echo $_GET['username']; ?>">
               Chat
             </a>
-            <a href="about.php?username=<?php echo $_GET['username']; ?>" class="navbar-item " disabled>
-              About
+            <a href="notify.php" class="navbar-item">
+              Notifications
             </a>
             <span class="navbar-item">
               <a href='logout.php' class="button is-primary is-inverted">
@@ -156,12 +132,12 @@ if(isset($_GET['username'])){
 
 				<br>
 				<div class="container">
-					<form action="profile.php?username=<?php echo $username; ?>" method="post">
+					<form id="Follow_Unfollow">
 					<?php if($followerid != $userid){
 					if(!$isFollowing){
-					echo "<input type='submit' name='follow' class='button is-danger is-focused is-medium' value='Follow'>";
+					echo "<input type='button' id='followUser' name='follow' class='button is-danger is-focused is-medium' value='Follow'>";
 					}else{
-					echo "<input type='submit' name='follow' class='button is-danger is-focused is-medium' value='Unfollow'>";
+					echo "<input type='button' id='unfollowUser' name='follow' class='button is-danger is-focused is-medium' value='Unfollow'>";
 					 } }?>
 				 </form>
 </section>
@@ -169,7 +145,7 @@ if(isset($_GET['username'])){
 <?php
 if(Login::isLoggedIn() == $userid){
 ?>
-<?php 
+<?php
 if($_GET['username'] == 'AmanSetia'){
 	$connection = mysqli_connect("sql108.epizy.com", "epiz_22081076", "THEHERO", "epiz_22081076_finale");
 	$row_count = mysqli_query($connection,"SELECT * FROM users");
@@ -181,17 +157,17 @@ if($_GET['username'] == 'AmanSetia'){
 }
  ?>
 	<div class="container-fluid">
-<form action="profile.php?username=<?php echo $username ?>" method="post">
+<form>
 	<div class="cloumns">
 		<center>
 		<div class="column is-one-quarter">
 			<label class="label">What's on your mind?</label>
 		</div>
 		<div class="column is-two-thirds">
-			<textarea name="postbody" rows="5" cols="25" class="input is-rounded is-focused is-primary" maxlength="120"></textarea>
+			<textarea id="postbody" name="postbody" rows="5" cols="25" class="input is-rounded is-focused is-primary" maxlength="120"></textarea>
 		</div>
 		<div class="column">
-			<input type="submit" class="button is-dark" name="post" value="Post">
+			<input type="button" id="Post" class="button is-dark" name="post" value="Post">
 		</div>
 		</form>
 	</div>
@@ -202,9 +178,9 @@ if($_GET['username'] == 'AmanSetia'){
 </div>
 	<?php
 	if($posts != ""){
-	 echo "<div class='col-lg-3'></div>";		
+	 echo "<div class='col-lg-3'></div>";
 	 echo "<div class='col-lg-6'>";
-	 echo $posts;
+	 echo "<span id='PostsAll'></span>";
 	 echo "</div>";
 	 echo "<div class='col-lg-3'></div>";
 	}else{
@@ -212,8 +188,60 @@ if($_GET['username'] == 'AmanSetia'){
 }
 ?>
 <script>
+	function GetPostAll() { 
+		$.get("functions.php", {
+			thing: "Get Posts",
+			userid: <?php echo $userid; ?>,
+			followerid: <?php echo $followerid; ?>
+		},function(data){
+			$("#PostsAll").html(data);
+		})
+	}
+
+	GetPostAll();
+
   	$('#NavBarToggle').click(function(){
 		$('#navbarMenuHeroA').toggleClass('is-active');
-	});	
+	});
+
+	$("#followUser").click(function(){
+		$.post("functions.php", {
+			thing: "Following",
+			userId: <?php echo $userid; ?>,
+			followerId: <?php echo $followerid; ?>
+		},function(data, status){
+			console.log(data);
+			console.log(status);
+			$("#Follow_Unfollow").html("<input type='button' id='unfollowUser' name='follow' class='button is-danger is-focused is-medium' value='Unfollow'>");
+			
+		})
+	})
+
+	$("#unfollowUser").click(function(){
+		$.post("functions.php", {
+			thing: "UnFollowing",
+			userId: <?php echo $userid; ?>,
+			followerId: <?php echo $followerid; ?>
+		},function(status, data){
+			console.log(data);
+			console.log(status);
+			$("#Follow_Unfollow").html("<input type='button' id='followUser' name='follow' class='button is-danger is-focused is-medium' value='Follow'>");
+			
+		})
+	})
+
+	$("#Post").click(function(){
+		$.post("functions.php", {
+			thing: "MakingPost",
+			postbody: $("#postbody").val(),
+			followerid: <?php echo $followerid; ?>,
+			userid: <?php echo $userid; ?>
+		},function(data){
+			console.log(data);
+			$("#postbody").val("");
+			GetPostAll();
+		})
+	})
+
 </script>
 </html>
