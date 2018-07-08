@@ -71,7 +71,7 @@ if(isset($_POST['comment'])){
 	<script src='https://code.jquery.com/jquery-3.3.1.js'></script>
 <script type="text/javascript">
 	$(document).ready(function(){
-		$("#searchButton").click(function(){
+		function searchUsers(e){
 			$.get("functions.php", {
 				query: $("#searchQuery").val()
 			},
@@ -81,7 +81,10 @@ if(isset($_POST['comment'])){
 				console.log(status);
 			}
 			)
-		})
+			e.preventDefault();
+		}
+
+		document.getElementById("searchUsersForm").addEventListener("submit", searchUsers);
 	}) 
 </script>
 </head>
@@ -97,9 +100,9 @@ if(isset($_POST['comment'])){
 		</div>
 		<div class="cloumns">
 			<div class="cloumn ">			
-					<form>
+					<form id="searchUsersForm">
 					<input type="text" name="searchQuery" id="searchQuery" class='input is-primary is-focused is-rounded searchBox' >		 
-					<button type="button" id="searchButton" name="search" class="button is-dark">Search</button>
+					<button type="button" id="searchButton" onclick="searchUsers()" name="search" class="button is-dark">Search</button>
 					</form>  
 					<a href="profile.php?username=<?php echo $userName?>" class='button is-warning is-rounded' >My profile</a>
 					<a href="logout.php" class="button is-info is-rounded">Logout</a>
