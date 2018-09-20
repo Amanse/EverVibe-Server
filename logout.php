@@ -46,6 +46,7 @@ if(!Login::isLoggedIn()){
 						<br>
 						<input type="submit" class="button is-rounded is-danger is-focused" name="confirm" value="Confirm">
 					</form>
+					<br>
 					<a href="index.php" class="button is-danger is-inverted is-text is-outlined">Go to Timeline</a>
 				</div>
 			</div>
