@@ -87,7 +87,23 @@ function password_verif($Logpassword, $dataPass){
 	$("#Pass").keypress(function(e){
                 var key = e.which;
                 if (key == 13) {
-                    login();
+                    $.post("functions.php", {
+            thing: "login",
+			username: document.getElementById("username").value,
+			password: document.getElementById("password").value
+		},
+		function(data, status) {
+			console.log(status);
+			console.log(data);
+			if (data == "Logged in") {
+				location.replace("index.php");
+			} else {
+			$("#response").html(data);
+			}
+		}
+		)
+	})
+	
                 }
             })
 </script>
