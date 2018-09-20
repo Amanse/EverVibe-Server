@@ -66,7 +66,8 @@ function password_verif($Logpassword, $dataPass){
 	</div>	
 </section>
 <script>
-	$("#Login").click(function(){
+	
+	function login() {
 		$.post("functions.php", {
             thing: "login",
 			username: document.getElementById("username").value,
@@ -82,6 +83,10 @@ function password_verif($Logpassword, $dataPass){
 			}
 		}
 		)
+	}
+
+	$("#Login").click(function(){
+		login();
 	})
 	
 	$("#Pass").keypress(function(e){
