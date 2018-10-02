@@ -10,3 +10,6 @@ Any server passwords won't be disclosed
 # How to use
 
 1) Install Xampp
+2) put evervibe in htdocs folder
+3) Make a PDO based DB file with name 'DB.php' and you can use the one by howCode (because that's what i used)
+4) go to localhost/evervibe and Congo! 
